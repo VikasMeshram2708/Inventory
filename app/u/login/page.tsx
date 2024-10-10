@@ -1,6 +1,7 @@
 "use client";
 
 import { loginSchema } from "@/app/models/UserSchema";
+import { useLoginUserMutation } from "@/app/store/user/userSlice";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,11 +14,14 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [tEye, setTEye] = useState(false);
+  const router = useRouter();
   const handleToggle = () => setTEye((prev) => !prev);
   const {
     register,
@@ -27,9 +31,22 @@ export default function LoginPage() {
   } = useForm<loginSchema>({
     resolver: zodResolver(loginSchema),
   });
-  const onSubmit: SubmitHandler<loginSchema> = (data) => {
-    console.log("data", data);
-    reset();
+
+  const [loginUser, { error }] = useLoginUserMutation({});
+  const onSubmit: SubmitHandler<loginSchema> = async (data) => {
+    try {
+      // console.log("data", data);
+      const res = await loginUser(data);
+      // console.log('res', res)
+      if (error || !res) {
+        return toast.error(res?.error as string);
+      }
+      return toast.success(res?.data as string);
+      reset();
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">

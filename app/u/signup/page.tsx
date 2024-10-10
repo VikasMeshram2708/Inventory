@@ -1,6 +1,7 @@
 "use client";
 
 import { signUpSchema } from "@/app/models/UserSchema";
+import { useCreateNewUserMutation } from "@/app/store/user/userSlice";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,11 +14,14 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const [tEye, setTEye] = useState(false);
+  const router = useRouter();
   const handleToggle = () => setTEye((prev) => !prev);
   const {
     register,
@@ -27,16 +31,30 @@ export default function SignUpPage() {
   } = useForm<signUpSchema>({
     resolver: zodResolver(signUpSchema),
   });
-  const onSubmit: SubmitHandler<signUpSchema> = (data) => {
-    console.log("data", data);
-    reset();
+
+  const [newUser, { isLoading, data: error }] = useCreateNewUserMutation({});
+  const onSubmit: SubmitHandler<signUpSchema> = async (data) => {
+    try {
+      const res = await newUser(data);
+      // console.log("res", res?.data);
+      // console.log("rm", resMsg);
+      // console.log("iserr", isError);
+      if (error) {
+        return toast.error(res?.error as string);
+      }
+      toast.success(res?.data as string);
+      reset();
+      router.push("/u/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-center">
-            Sign Up
+            {isLoading ? "Processing..." : "Sign Up"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -79,7 +97,9 @@ export default function SignUpPage() {
                 </span>
               )}
             </div>
-            <Button type="submit">Sign Up</Button>
+            <Button disabled={isLoading} type="submit">
+              Sign Up
+            </Button>
           </form>
         </CardContent>
         <CardFooter className="flex items-center justify-center">
