@@ -19,12 +19,11 @@ export default function ProductSearch() {
       </div>
       <Select>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Theme" />
+          <SelectValue placeholder="Select Range" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="light">Light</SelectItem>
-          <SelectItem value="dark">Dark</SelectItem>
-          <SelectItem value="system">System</SelectItem>
+          <SelectItem value="highToLow">High to Low</SelectItem>
+          <SelectItem value="minToHigh">Min to High</SelectItem>
         </SelectContent>
       </Select>
     </div>
