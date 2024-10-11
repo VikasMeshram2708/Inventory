@@ -1,4 +1,4 @@
-import { loginSchema, signUpSchema } from "@/app/models/UserSchema";
+import { signUpSchema } from "@/app/models/UserSchema";
 import {
   createApi,
   fetchBaseQuery,
@@ -30,23 +30,23 @@ export const userSlice = createApi({
 
     // Login
 
-    loginUser: builder.mutation({
-      query: (value: loginSchema) => ({
-        url: "/login",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: value,
-      }),
-      transformResponse: (response: { message: string }) => {
-        return response.message || "User Logged In Successfully";
-      },
-      transformErrorResponse: ({ data }: FetchBaseQueryError) => {
-        return (data as { message?: string })?.message || "An Error Occured";
-      },
-    }),
+    // loginUser: builder.mutation({
+    //   query: (value: loginSchema) => ({
+    //     url: "/login",
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: value,
+    //   }),
+    //   transformResponse: (response: { message: string }) => {
+    //     return response.message || "User Logged In Successfully";
+    //   },
+    //   transformErrorResponse: ({ data }: FetchBaseQueryError) => {
+    //     return (data as { message?: string })?.message || "An Error Occured";
+    //   },
+    // }),
   }),
 });
 
-export const { useCreateNewUserMutation, useLoginUserMutation } = userSlice;
+export const { useCreateNewUserMutation } = userSlice;

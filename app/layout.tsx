@@ -52,9 +52,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster />
-          <Navbar />
-          <Wrapper>{children}</Wrapper>
-          <Footer />
+          <Wrapper>
+            <Navbar />
+            {children}
+            <Footer />
+          </Wrapper>
         </ThemeProvider>
       </body>
     </html>

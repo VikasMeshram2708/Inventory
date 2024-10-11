@@ -1,7 +1,6 @@
 "use client";
 
 import { loginSchema } from "@/app/models/UserSchema";
-import { useLoginUserMutation } from "@/app/store/user/userSlice";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeClosed } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,16 +33,40 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const [loginUser, { error }] = useLoginUserMutation({});
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async (data: loginSchema) => {
+      try {
+        const res = await signIn("credentials", {
+          redirect: false,
+          email: data?.email,
+          password: data?.password,
+        });
+        return res;
+      } catch (error) {
+        console.log(
+          `Something went wrong. Login Failed please try again. ${error}`
+        );
+        throw new Error("Something went wrong. Login Failed");
+      }
+    },
+    onSuccess: (result) => {
+      if (result?.ok) {
+        toast.success("Logged In");
+        reset();
+        router.push("/");
+      } else {
+        return toast.error(result?.error || "Login Failed");
+      }
+    },
+    onError: (error) => {
+      console.error("Unexpected Error", error);
+      toast.error("An Unexpected Error Occured");
+    },
+  });
+
   const onSubmit: SubmitHandler<loginSchema> = async (data) => {
     try {
-      // console.log("data", data);
-      const res = await loginUser(data);
-      // console.log('res', res)
-      if (error || !res) {
-        return toast.error(res?.error as string);
-      }
-      return toast.success(res?.data as string);
+      mutate(data);
       reset();
       router.push("/");
     } catch (error) {
@@ -53,7 +78,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-xl mx-auto shadow-lg">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-center">
-            Login
+            {isLoading ? "Processing..." : "Login"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -87,7 +112,9 @@ export default function LoginPage() {
                 </span>
               )}
             </div>
-            <Button type="submit">Login</Button>
+            <Button disabled={isLoading} type="submit">
+              Login
+            </Button>
           </form>
         </CardContent>
         <CardFooter className="flex items-center justify-center">
