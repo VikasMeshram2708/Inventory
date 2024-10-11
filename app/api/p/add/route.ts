@@ -9,7 +9,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const reqBody = await request.json();
     const token = await GetDataFromToken(request);
-    console.log("to", token);
+    // console.log("to", token);
 
     const parsedRes = createProductSchema.safeParse(reqBody);
     if (!parsedRes.success) {

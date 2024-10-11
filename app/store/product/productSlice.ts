@@ -10,6 +10,14 @@ export const productSlice = createApi({
   tagTypes: ["Product"],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/p" }),
   endpoints: (builder) => ({
+    // Fetch All Products
+    fetchAll: builder.query<Product[], void>({
+      query: () => "/all",
+      providesTags: ["Product"],
+      transformResponse: (response: { products: Product[] }) =>
+        response?.products,
+    }),
+    // Add New Product
     addNewProduct: builder.mutation({
       query: (value: createProductSchema) => ({
         url: "/add",
@@ -19,6 +27,7 @@ export const productSlice = createApi({
         },
         body: value,
       }),
+      invalidatesTags: ["Product"],
       transformResponse: (response: { message: string }) => {
         return response;
       },
@@ -32,4 +41,4 @@ export const productSlice = createApi({
   }),
 });
 
-export const { useAddNewProductMutation } = productSlice;
+export const { useAddNewProductMutation, useFetchAllQuery } = productSlice;
