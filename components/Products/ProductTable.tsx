@@ -113,7 +113,7 @@ import {
         </TableHeader>
         <TableBody>
           {invoices.map((invoice) => (
-            <TableRow key={invoice.index}>
+            <TableRow key={+invoice.index}>
               <TableCell className="font-medium">{invoice.index}</TableCell>
               <TableCell>{invoice.title}</TableCell>
               <TableCell>{invoice.description}</TableCell>

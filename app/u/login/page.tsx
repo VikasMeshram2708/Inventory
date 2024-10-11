@@ -54,6 +54,7 @@ export default function LoginPage() {
         toast.success("Logged In");
         reset();
         router.push("/");
+        Promise.resolve();
       } else {
         return toast.error(result?.error || "Login Failed");
       }
