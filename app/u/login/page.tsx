@@ -69,7 +69,6 @@ export default function LoginPage() {
     try {
       mutate(data);
       reset();
-      router.push("/");
     } catch (error) {
       console.log(error);
     }

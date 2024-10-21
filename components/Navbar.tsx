@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const handleLogout = async () => signOut();
   return (
-    <header className="">
+    <header className="px-4 py-2">
       <nav className="py-2 border-b max-w-5xl mx-auto flex items-center justify-between">
         <h1 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">
           <Link href="/">Inventory</Link>

@@ -23,3 +23,12 @@ export const createProductSchema = z.object({
 });
 
 export type createProductSchema = z.infer<typeof createProductSchema>;
+
+export const queryProductSchema = z.object({
+  query: z
+    .string()
+    .min(2, { message: "Query must be at least 2 characters long." })
+    .max(150, { message: "Query cannot exceed 150 characters." }),
+});
+
+export type queryProductSchema = z.infer<typeof queryProductSchema>;

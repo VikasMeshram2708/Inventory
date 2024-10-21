@@ -4,7 +4,7 @@ import { ProductTable } from "@/components/Products/ProductTable";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-full max-w-5xl mx-auto py-10 flex flex-col gap-10">
+    <main className="min-h-screen w-full max-w-5xl mx-auto py-10 px-4 flex flex-col gap-10">
       <div>
         <ProductSearch />
       </div>

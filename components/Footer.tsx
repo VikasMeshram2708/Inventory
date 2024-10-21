@@ -55,7 +55,7 @@ export default function Footer() {
             <div className="w-full sm:w-1/2 lg:w-1/4">
               <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
               <p className="text-sm">123 Inventory St, Business City, BC 12345</p>
-              <p className="text-sm">Email: info@inventoryapp.com</p>
+              <p className="text-sm">Email: abc@inventoryapp.com</p>
               <p className="text-sm">Phone: (123) 456-7890</p>
             </div>
           </div>
