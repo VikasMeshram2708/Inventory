@@ -18,55 +18,55 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
+import { useFilterProductsMutation } from "@/app/store/product/productSlice";
 
 export default function ProductSearch() {
   const [searchValue, setSearchValue] = useState("");
   const query = useDebounce(searchValue, 500);
   const [fProducts, setFProducts] = useState<Product[]>([]);
 
+  // Use the mutation hook
+  const [filteredProducts, { error, isError }] = useFilterProductsMutation();
+
   useEffect(() => {
     const queryProducts = async () => {
+      if (query === "") {
+        setFProducts([]);
+        return;
+      }
+
       try {
-        if (query === "") {
-          setFProducts([]);
-          return;
-        }
-        console.log("dq", { query: query });
-        const res = await fetch("/api/p/search", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query: query.toLowerCase() }),
-        });
-        const result = await res.json();
-        if (!res.ok) {
-          throw result?.message || "Products Not Found";
-        }
-        console.log("res", result?.products || []);
-        setFProducts(result?.products || []);
+        console.log("dq", { query });
+        const res = await filteredProducts({ query }).unwrap(); // Unwrap to get data or throw error
+
+        // Handle response
+        setFProducts(res || []);
       } catch (error) {
-        console.log(`Something went wrong. Please try again. ${error}`);
+        console.error(`Something went wrong. Please try again. ${error}`);
         setFProducts([]);
       }
     };
-    queryProducts();
-  }, [query]);
+
+    // Only call queryProducts if query is not empty
+    if (query) {
+      queryProducts();
+    }
+  }, [query, filteredProducts]);
 
   const handleClear = () => {
-    setSearchValue("")
+    setSearchValue("");
     setFProducts([]);
-  }
+  };
 
   return (
     <>
       <div className="flex items-center gap-3 justify-between">
         <div className="flex items-center gap-3 w-full">
-          <p className="text-sm">Search Products : </p>
+          <p className="text-sm">Search Products:</p>
           <Input
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            className="text-sm font-semibold w-full max-w-2xl"
+            className="text-sm w-full max-w-2xl"
             placeholder="Search"
           />
         </div>
@@ -80,16 +80,22 @@ export default function ProductSearch() {
           </SelectContent>
         </Select>
       </div>
-      {fProducts.length > 1 && (
-        <Button onClick={handleClear} variant={"destructive"}>Clear Results</Button>
+
+      {query.length >= 1 && isError && <p>{error as string}</p>}
+
+      {fProducts.length >= 1 && (
+        <Button onClick={handleClear} variant={"destructive"}>
+          Clear Results
+        </Button>
       )}
+
       <ul className="grid gap-3 grid-cols-1 md:grid-cols-2 py-3">
-        {fProducts?.map((item) => (
+        {fProducts.map((item) => (
           <FilteredProductsList
-            key={item?.id}
-            title={item?.title}
-            description={item?.description}
-            amount={item?.amount}
+            key={item.id}
+            title={item.title}
+            description={item.description}
+            amount={item.amount}
           />
         ))}
       </ul>
@@ -102,6 +108,7 @@ interface filteredProductsProps {
   description: string;
   amount: number;
 }
+
 const FilteredProductsList = ({
   title,
   description,
@@ -110,8 +117,8 @@ const FilteredProductsList = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="capitalize">{title}</CardTitle>
+        <CardDescription className="capitalize">{description}</CardDescription>
       </CardHeader>
       <CardContent>{amount}</CardContent>
       <CardFooter>

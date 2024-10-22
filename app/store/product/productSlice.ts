@@ -1,4 +1,7 @@
-import { createProductSchema } from "@/app/models/ProductSchema";
+import {
+  createProductSchema,
+  queryProductSchema,
+} from "@/app/models/ProductSchema";
 import {
   createApi,
   fetchBaseQuery,
@@ -38,7 +41,32 @@ export const productSlice = createApi({
         );
       },
     }),
+    // filter products
+    filterProducts: builder.mutation<Product[], queryProductSchema>({
+      query: (data: queryProductSchema) => ({
+        url: "/search",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", 
+        },
+        body: JSON.stringify(data),
+      }),
+
+      transformResponse: (response: { products: Product[] }) => {
+        return response?.products;
+      },
+
+      transformErrorResponse: ({ data }) => {
+        return (
+          (data as { message: string })?.message || "An unknown error ocurred"
+        );
+      },
+    }),
   }),
 });
 
-export const { useAddNewProductMutation, useFetchAllQuery } = productSlice;
+export const {
+  useAddNewProductMutation,
+  useFetchAllQuery,
+  useFilterProductsMutation,
+} = productSlice;

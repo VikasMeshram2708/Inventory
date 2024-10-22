@@ -1,16 +1,18 @@
 import { queryProductSchema } from "@/app/models/ProductSchema";
 import { DbConnect } from "@/lib/DB";
 import { ErrorHandler } from "@/lib/ErrorHandler";
+import { GetDataFromToken } from "@/lib/GetDataFromToken";
 import { prismaInstance } from "@/lib/PrismaInstance";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
   try {
     const reqBody = await request.json();
+    const token = await GetDataFromToken(request);
 
     const parsedRes = queryProductSchema.safeParse(reqBody);
     if (!parsedRes.success) {
-        throw new Error(parsedRes.error.message || "Invalid Data");
+      throw new Error(parsedRes.error.message || "Invalid Data");
     }
     const parsedData = parsedRes.data;
     const { query } = parsedData;
@@ -20,6 +22,7 @@ export const POST = async (request: NextRequest) => {
 
     const products = await prismaInstance.product.findMany({
       where: {
+        userId: token?.id as number,
         OR: [
           { title: { contains: query, mode: "insensitive" } },
           { description: { contains: query, mode: "insensitive" } },
