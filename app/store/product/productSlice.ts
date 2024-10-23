@@ -14,11 +14,10 @@ export const productSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api/p" }),
   endpoints: (builder) => ({
     // Fetch All Products
-    fetchAll: builder.query<Product[], void>({
-      query: () => "/all",
+    fetchAll: builder.query<ReturnRes, { skip?: number; limit?: number }>({
+      query: ({ skip = 0, limit = 10 }) => `/all?skip=${skip}&limit=${limit}`,
       providesTags: ["Product"],
-      transformResponse: (response: { products: Product[] }) =>
-        response?.products,
+      transformResponse: (response): ReturnRes => response as ReturnRes,
     }),
     // Add New Product
     addNewProduct: builder.mutation({
@@ -47,7 +46,7 @@ export const productSlice = createApi({
         url: "/search",
         method: "POST",
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       }),

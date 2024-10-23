@@ -26,7 +26,7 @@ export default function ProductSearch() {
   const [fProducts, setFProducts] = useState<Product[]>([]);
 
   // Use the mutation hook
-  const [filteredProducts, { error, isError }] = useFilterProductsMutation();
+  const [filteredProducts, { isError }] = useFilterProductsMutation();
 
   useEffect(() => {
     const queryProducts = async () => {
@@ -36,7 +36,7 @@ export default function ProductSearch() {
       }
 
       try {
-        console.log("dq", { query });
+        // console.log("dq", { query });
         const res = await filteredProducts({ query }).unwrap(); // Unwrap to get data or throw error
 
         // Handle response
@@ -81,7 +81,7 @@ export default function ProductSearch() {
         </Select>
       </div>
 
-      {query.length >= 1 && isError && <p>{error as string}</p>}
+      {query.length >= 1 && isError && <p>Not Found</p>}
 
       {fProducts.length >= 1 && (
         <Button onClick={handleClear} variant={"destructive"}>

@@ -19,3 +19,9 @@ interface Product {
   updatedAt: string;
   userId: number;
 }
+
+interface ReturnRes {
+  hasMore: boolean;
+  total: number;
+  products: Product[];
+}
