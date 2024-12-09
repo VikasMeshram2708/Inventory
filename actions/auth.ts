@@ -1,9 +1,12 @@
 "use server";
 
 import { newUser } from "@/app/models/authSchema";
-import prisma from "@/lib/prisma";
+import { db } from "@/db";
+import { usersTable } from "@/db/schema";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 
+// Creating New User
 export async function signUp(formData: FormData) {
   const rawData: newUser = {
     email: formData.get("email") as string,
@@ -16,45 +19,40 @@ export async function signUp(formData: FormData) {
 
   if (!validateSchema.success) {
     return {
-      error: validateSchema.error.issues,
+      error: validateSchema.error.message,
     };
   }
   const { email, password, username, avatarUrl } = validateSchema.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const [emailExist, userNameExist] = await Promise.all([
-    await prisma.user.findUnique({
-      where: {
-        email,
-      },
+  const [userNameExist, emailExist] = await Promise.all([
+    await db.query.usersTable.findFirst({
+      where: eq(usersTable.username, username),
     }),
 
-    await prisma.user.findUnique({
-      where: {
-        username,
-      },
+    await db.query.usersTable.findFirst({
+      where: eq(usersTable.email, email),
     }),
   ]);
 
-  if (emailExist) {
-    return {
-      error: "Email is already in use",
-    };
-  }
   if (userNameExist) {
     return {
-      error: "User Name is already in use",
+      error: "User Name already in use",
     };
   }
 
-  await prisma.user.create({
-    data: {
-      username,
-      email,
-      password: hashedPassword,
-      avatarUrl,
-    },
+  if (emailExist) {
+    return {
+      error: "Email already in use",
+    };
+  }
+
+  await db.insert(usersTable).values({
+    username: username,
+    email: email,
+    password: hashedPassword,
+    avatarUrl: (avatarUrl as string) || "https://is.gd/YnlDuO",
   });
 
   return {

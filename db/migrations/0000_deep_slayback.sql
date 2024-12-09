@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"username" text NOT NULL,
 	"email" text NOT NULL,
 	"password" text NOT NULL,
-	"avatarUrl" text NOT NULL,
+	"avatarUrl" text,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now(),
 	CONSTRAINT "users_username_unique" UNIQUE("username"),

@@ -13,8 +13,8 @@ export const newUser = z.object({
   email: z.string().email(),
   password: z
     .string()
-    .min(50, {
-      message: "User Name must have at-least 50 characters",
+    .min(5, {
+      message: "User Name must have at-least 5 characters",
     })
     .max(100, {
       message: "User Name should not exceed more than 100 characters",
