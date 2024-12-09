@@ -3,8 +3,10 @@
 import { newUser } from "@/app/models/authSchema";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
+import { authOptions } from "@/utils/nextAuthOptions";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 // Creating New User
@@ -61,4 +63,13 @@ export async function signUp(formData: FormData) {
   return {
     message: "User Registered Successfully",
   };
+}
+
+export async function getUserData() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw new Error("Session Not Found");
+  }
+
+  return session;
 }
