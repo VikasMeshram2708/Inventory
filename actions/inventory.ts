@@ -1,49 +1,67 @@
 "use server";
 
-import { addProductSchema } from "@/app/models/inventorySchema";
 import { db } from "@/db";
-import { productsTable } from "@/db/schema";
 import { getUserData } from "./auth";
+import { addProductSchema } from "@/app/models/inventorySchema";
+import { inventoryTable } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
+// Add Product
 export async function addProduct(formData: FormData) {
   const rawData = {
-    title: formData.get("title"),
-    description: formData.get("description"),
-    price: formData.get("price"),
+    title: String(formData.get("title")),
+    description: String(formData.get("description")),
+    amount: Number(formData.get("amount")),
+    quantity: Number(formData.get("quantity")),
   };
 
-  console.log("rw", Number(rawData.price));
-
-  const { title, description, price } = rawData;
-  const parsedRes = addProductSchema.safeParse({
-    title,
-    description,
-    price: Number(price),
-  });
+  const parsedRes = addProductSchema.safeParse(rawData);
 
   if (!parsedRes.success) {
+    const msg = parsedRes.error.issues.map((e) => ({
+      message: e.message,
+    }));
     return {
-      error: parsedRes.error?.message,
+      error: msg,
     };
   }
 
-  const parsedData = parsedRes.data;
+  const { title, amount, description, quantity } = parsedRes.data;
 
   const userData = await getUserData();
-  if (!userData) {
-    return {
-      error: "Login Required",
-    };
-  }
 
-  await db.insert(productsTable).values({
-    title: parsedData.title,
-    price: parsedData.price,
-    description: parsedData.description,
-    userId: Number(userData?.user?.id),
+  await db.insert(inventoryTable).values({
+    title,
+    amount,
+    description,
+    quantity,
+    userId: Number(userData.user?.id),
   });
+
+  revalidatePath("/");
 
   return {
     message: "Product Added to Inventory",
+  };
+}
+
+// Read all Products user Specific
+
+export async function fetchProducts() {
+  const userData = await getUserData();
+
+  if (!userData) {
+    throw new Error("Login Required");
+  }
+
+  const products = await db.query.inventoryTable.findMany({
+    where: eq(inventoryTable.userId, Number(userData?.user?.id)),
+    orderBy: [desc(inventoryTable.createdAt)],
+    limit: 10,
+  });
+
+  return {
+    data: products,
   };
 }

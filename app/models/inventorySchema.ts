@@ -13,7 +13,8 @@ export const addProductSchema = z.object({
       message: "Title must have at-least 2 characters",
     })
     .max(255, { message: "Title should not exceed more than 255 characters" }),
-  price: z.number({}).int().positive(),
+  amount: z.number(),
+  quantity: z.number(),
 });
 
 export type addProductSchema = z.infer<typeof addProductSchema>;

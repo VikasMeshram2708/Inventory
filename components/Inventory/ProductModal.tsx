@@ -19,19 +19,19 @@ export default function ProductModal({
 }: {
   setToggle: Dispatch<SetStateAction<boolean>>;
 }) {
-    
   async function handleProduct(formData: FormData) {
     const result = await addProduct(formData);
     if ("error" in result) {
-      console.log("er", result.error);
+      // console.log("er", result.error);
       alert(result.error);
     } else {
-      console.log("ms", result.message);
-      alert(result.message);
+      // console.log("ms", result.message);
+      alert(result.message)
+      setToggle(false)
     }
   }
   return (
-    <div className="absolute w-full bg-black/90 h-screen top-0 py-20">
+    <div className="absolute w-full z-40 bg-black/90 h-screen top-0 py-20">
       <Card className="container max-w-xl mx-auto shadow-primary/50 shadow">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -54,13 +54,25 @@ export default function ProductModal({
         </CardHeader>
         <CardContent>
           <form className="grid gap-2" action={handleProduct}>
-            <Input name="title" type="text" placeholder="Type Title" />
+            <Input name="title" type="text" placeholder="Type Title" required />
             <Input
               name="description"
               type="text"
               placeholder="Type Description"
+              required
             />
-            <Input name="price" type="number" placeholder="Type Price" />
+            <Input
+              name="amount"
+              type="number"
+              placeholder="Type Price"
+              required
+            />
+            <Input
+              name="quantity"
+              type="number"
+              placeholder="Type Quantity"
+              required
+            />
             <SubmitButton />
           </form>
         </CardContent>
