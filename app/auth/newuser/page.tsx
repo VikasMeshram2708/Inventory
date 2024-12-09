@@ -31,10 +31,10 @@ export default function NewUser() {
             action={async (formData: FormData) => {
               const result = await signUp(formData);
               if ("error" in result) {
-                console.log("err", result.error);
+                // console.log("err", result.error);
                 alert(result.error);
               } else {
-                console.log("ms", result.message);
+                // console.log("ms", result.message);
                 alert(result.message);
                 redirect("/auth/signin");
               }

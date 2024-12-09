@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/navbar";
 import AuthProvider from "@/context/AuthProvider";
+import Protected from "@/context/Protected";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,8 +39,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            {children}
+            <Protected>
+              <Navbar />
+              {children}
+            </Protected>
           </ThemeProvider>
         </body>
       </AuthProvider>

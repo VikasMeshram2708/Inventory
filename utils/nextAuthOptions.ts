@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { db } from "@/db";
+import { usersTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -17,19 +22,26 @@ export const authOptions: NextAuthOptions = {
           placeholder: "Type Password",
         },
       },
-      async authorize(credentials) {
-        const user = {
-          id: "1",
-          username: "test1",
-          email: "test1@gmail.com",
-          password: "test1",
-        };
-
-        if (credentials?.email !== user.email) {
-          throw new Error("Invalid Email Provided");
+      async authorize(credentials): Promise<any> {
+        if (!credentials) {
+          throw new Error("Credentials are required");
         }
 
-        if (credentials.password !== user.password) {
+        const user = await db.query.usersTable.findFirst({
+          where: eq(usersTable.email, credentials?.email),
+        });
+
+        if (!user) {
+          throw new Error("User Does not exist");
+        }
+
+        // compare the password
+        const validPassword = await bcrypt.compare(
+          credentials.password,
+          user?.password as string
+        );
+
+        if (!validPassword) {
           throw new Error("Invalid Credentials");
         }
 

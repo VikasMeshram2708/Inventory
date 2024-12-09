@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 // Creating New User
 export async function signUp(formData: FormData) {
@@ -54,6 +55,8 @@ export async function signUp(formData: FormData) {
     password: hashedPassword,
     avatarUrl: (avatarUrl as string) || "https://is.gd/YnlDuO",
   });
+
+  revalidatePath("/auth/newuser");
 
   return {
     message: "User Registered Successfully",

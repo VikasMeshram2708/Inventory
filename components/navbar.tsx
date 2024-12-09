@@ -14,6 +14,7 @@ export default async function Navbar() {
         <h1 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">
           <Link href="/">Inventory</Link>
         </h1>
+        {/* <p>{JSON.stringify(session)}</p> */}
         <div className="flex gap-2">
           {session ? (
             <>
