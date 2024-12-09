@@ -20,3 +20,5 @@ export const newUser = z.object({
       message: "User Name should not exceed more than 100 characters",
     }),
 });
+
+export type newUser = z.infer<typeof newUser>;
