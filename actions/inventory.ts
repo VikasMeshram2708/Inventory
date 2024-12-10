@@ -33,7 +33,7 @@ export async function addProduct(formData: FormData) {
 
   await db.insert(inventoryTable).values({
     title,
-    amount,
+    amount: String(amount),
     description,
     quantity,
     userId: Number(userData.user?.id),
@@ -48,7 +48,7 @@ export async function addProduct(formData: FormData) {
 
 // Read all Products user Specific
 
-export async function fetchProducts() {
+export async function fetchProducts(currPage: number = 1, limit: number = 5) {
   const userData = await getUserData();
 
   if (!userData) {
@@ -58,10 +58,22 @@ export async function fetchProducts() {
   const products = await db.query.inventoryTable.findMany({
     where: eq(inventoryTable.userId, Number(userData?.user?.id)),
     orderBy: [desc(inventoryTable.createdAt)],
-    limit: 10,
+    limit: limit,
+    offset: (currPage - 1) * limit,
   });
+
+  if (!products || products.length === 0) {
+    return {
+      error: "No more products to fetch.",
+    };
+  }
+
+  const totalCount = await db
+    .select({ count: inventoryTable.amount })
+    .from(inventoryTable);
 
   return {
     data: products,
+    totalCount: totalCount.length / currPage,
   };
 }

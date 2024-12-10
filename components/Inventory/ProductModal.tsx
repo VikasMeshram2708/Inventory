@@ -26,8 +26,8 @@ export default function ProductModal({
       alert(result.error);
     } else {
       // console.log("ms", result.message);
-      alert(result.message)
-      setToggle(false)
+      alert(result.message);
+      setToggle(false);
     }
   }
   return (

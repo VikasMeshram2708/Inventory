@@ -8,3 +8,9 @@ type ProductType = {
   amount: string;
   userId: number;
 };
+
+type PaginationState = {
+  currentPage: number;
+  limit: number;
+  totalPagesCount?: number; // Optional property
+};
