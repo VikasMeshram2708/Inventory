@@ -1,10 +1,10 @@
 import {
   integer,
   pgTable,
-  real,
   serial,
   timestamp,
   text,
+  decimal,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -26,7 +26,7 @@ export const inventoryTable = pgTable("inventory", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   quantity: integer("quantity").default(10).notNull(),
-  amount: real("totalAmount").notNull(),
+  amount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
   userId: integer("user_id")
     .notNull()
     .references(() => usersTable.id, {

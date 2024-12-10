@@ -1,0 +1,1 @@
+ALTER TABLE "inventory" ALTER COLUMN "totalAmount" SET DATA TYPE numeric(10, 2);

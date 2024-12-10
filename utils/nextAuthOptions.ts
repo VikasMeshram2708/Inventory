@@ -60,11 +60,18 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.username = user.username;
+        token.exp = Math.floor(Date.now() / 1000) + 60 * 60;
       }
       return token;
     },
     session({ token, session }) {
       if (token) {
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (token.exp && currentTime > token.exp) {
+          throw new Error("Session Expired");
+        }
+
         session.user.id = token.id as string;
         session.user.username = token.username as string;
         session.user.email = token.email as string;

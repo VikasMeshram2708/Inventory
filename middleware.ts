@@ -7,6 +7,10 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  if (token?.exp && Math.floor(Date.now() / 1000) > token?.exp) {
+    return new Response("Session Expired", { status: 401 });
+  }
+
   const path = request.nextUrl.pathname;
   const publicPaths = new Set(["/auth/signin", "/auth/newuser"]); // Add other public paths as needed
   const isPublicPath = publicPaths.has(path);

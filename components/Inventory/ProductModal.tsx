@@ -64,6 +64,7 @@ export default function ProductModal({
             <Input
               name="amount"
               type="number"
+              step={0.01}
               placeholder="Type Price"
               required
             />
