@@ -1,16 +1,17 @@
 // SkeletonLoader.tsx
 import React from "react";
+import { Skeleton } from "./ui/skeleton";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
   TableFooter,
+  // TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 
-export default function loading() {
+export default function TableLoader() {
   return (
     <div className="w-full max-w-7xl grid gap-3 mx-auto py-10">
       <div className="w-container mx-auto flex items-center gap-2">
@@ -20,7 +21,15 @@ export default function loading() {
         <TableCaption>
           <Skeleton className="h-6 w-1/3 rounded" />
         </TableCaption>
-
+        {/* <TableHeader>
+          <TableRow>
+            <Skeleton className="h-6 w-[100px] rounded" />
+            <Skeleton className="h-6 w-full rounded" />
+            <Skeleton className="h-6 w-full rounded" />
+            <Skeleton className="h-6 w-full rounded" />
+            <Skeleton className="h-6 w-[100px] rounded" />
+          </TableRow>
+        </TableHeader> */}
         <TableBody>
           {[...Array(5)].map((_, index) => (
             <TableRow key={index}>

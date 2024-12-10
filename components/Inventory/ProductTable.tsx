@@ -16,6 +16,7 @@ import { fetchProducts } from "@/actions/inventory";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useCallback, useEffect, useState } from "react";
+import TableLoader from "../TableLoader";
 
 export default function ProductTable() {
   const [products, setProducts] = useState<ProductType[]>([]);
@@ -34,8 +35,10 @@ export default function ProductTable() {
         pagination.limit
       );
       if ("error" in result) {
+        console.log("res", result.error);
         return alert(result.error);
       }
+      console.log("r", result.data);
       setProducts(result.data);
       setTotalPages(result.totalCount);
     } catch (error) {
@@ -46,7 +49,7 @@ export default function ProductTable() {
   }, [pagination]);
 
   useEffect(() => {
-    if (pagination.currentPage !== totalPages) {
+    if (pagination.currentPage !== totalPages && pagination.currentPage >= 1) {
       fetchAllProduct();
     }
   }, [fetchAllProduct, pagination, totalPages]);
@@ -83,13 +86,16 @@ export default function ProductTable() {
 
   const totalAmount = calculateTotalAmount(products);
 
+  if (loading) {
+    return <TableLoader />;
+  }
+
   return (
     <div className="w-full max-w-7xl grid gap-3 mx-auto py-10">
       <div className="container mx-auto flex items-center gap-2">
         <label htmlFor="Search Product">Search </label>
         <Input placeholder="Search Product..." type="text" />
       </div>
-      <span>{loading && "loading..."}</span>
       <Table className="border p-2 container mx-auto">
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>

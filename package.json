@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:generate": "pnpm drizzle-kit generate",
     "db:migrate": "pnpm drizzle-kit migrate",
-    "db:studio":"pnpm drizzle-kit studio"
+    "db:studio":"pnpm drizzle-kit studio",
+    "db:push":"pnpm drizzle-kit push"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

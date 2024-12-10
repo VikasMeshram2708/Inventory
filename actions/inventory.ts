@@ -47,7 +47,6 @@ export async function addProduct(formData: FormData) {
 }
 
 // Read all Products user Specific
-
 export async function fetchProducts(currPage: number = 1, limit: number = 5) {
   const userData = await getUserData();
 
