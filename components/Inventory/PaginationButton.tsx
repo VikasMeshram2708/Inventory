@@ -1,30 +1,25 @@
-// "use client";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import Link from "next/link";
+import { Button } from "../ui/button";
 
-// import { fetchProducts } from "@/actions/inventory";
-// import { Button } from "../ui/button";
-
-// export default function PaginationButton({
-//   currentPage,
-//   totalPage,
-// }: {
-//   currentPage: number;
-//   totalPage: number;
-// }) {
-//   async function handlePrev() {
-//     const result = await fetchProducts(currentPage - 1);
-
-//   }
-
-//   function handleNext() {}
-
-//   return (
-//     <div className="container flex justify-end gap-2 mt-4">
-//       <Button onClick={handlePrev} disabled={currentPage === 1}>
-//         Prev
-//       </Button>
-//       <Button onClick={handleNext} disabled={currentPage === totalPage}>
-//         Next
-//       </Button>
-//     </div>
-//   );
-// }
+type PaginationProps = {
+  page: number;
+  limit: number;
+  hasNextPage: boolean | undefined;
+  totalPage: number | undefined;
+};
+export default function PaginationButton(props: PaginationProps) {
+  const page = props?.page;
+  const limit = props?.limit;
+  const totalPages = props?.totalPage;
+  return (
+    <div className="container flex justify-end gap-2 mt-4">
+      <Button disabled={page === 1} type="button">
+        <Link href={`/?page=${page - 1}&limit=${limit}`}>Prev</Link>
+      </Button>
+      <Button disabled={page === totalPages} type="button">
+        <Link href={`/?page=${page + 1}&limit=${limit}`}>Next</Link>
+      </Button>
+    </div>
+  );
+}

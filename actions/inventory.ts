@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 "use server";
 
 import { db } from "@/db";
@@ -47,32 +48,59 @@ export async function addProduct(formData: FormData) {
 }
 
 // Read all Products user Specific
-export async function fetchProducts(currPage: number = 1, limit: number = 5) {
-  const userData = await getUserData();
+export async function fetchProducts({
+  currPage = 1,
+  limit = 5,
+}: {
+  currPage: number;
+  limit?: number;
+}) {
+  try {
+    const userData = await getUserData();
+    if (!userData) {
+      return {
+        error: "Login Required",
+      };
+    }
 
-  if (!userData) {
-    throw new Error("Login Required");
-  }
+    const userId = Number(userData?.user?.id);
 
-  const products = await db.query.inventoryTable.findMany({
-    where: eq(inventoryTable.userId, Number(userData?.user?.id)),
-    orderBy: [desc(inventoryTable.createdAt)],
-    limit: limit,
-    offset: (currPage - 1) * limit,
-  });
+    // Fetch products for current page
+    const products = await db.query.inventoryTable.findMany({
+      where: eq(inventoryTable.userId, userId),
+      orderBy: [desc(inventoryTable.createdAt)],
+      limit: limit,
+      offset: (currPage - 1) * limit,
+    });
 
-  if (!products || products.length === 0) {
+    // Get total count of products
+    const [totalCountResult] = await db
+      .select({ count: inventoryTable.id })
+      .from(inventoryTable)
+      .where(eq(inventoryTable.userId, userId));
+
+    const totalCount = totalCountResult?.count || 0;
+    const totalPages = Math.floor(totalCount / limit);
+
+    if (!products || products.length === 0) {
+      return {
+        error: "No more products to fetch.",
+        metadata: {
+          totalPages,
+          hasNextPage: false,
+        },
+      };
+    }
+
     return {
-      error: "No more products to fetch.",
+      data: products,
+      metadata: {
+        totalPages,
+      },
+    };
+  } catch (error) {
+    return {
+      error: `Something went wrong. Please try again. ${error}`,
     };
   }
-
-  const totalCount = await db
-    .select({ count: inventoryTable.amount })
-    .from(inventoryTable);
-
-  return {
-    data: products,
-    totalCount: totalCount.length / currPage,
-  };
 }
