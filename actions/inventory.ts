@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { getUserData } from "./auth";
 import { addProductSchema } from "@/app/models/inventorySchema";
 import { inventoryTable } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ilike } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // Add Product
@@ -96,6 +96,44 @@ export async function fetchProducts({
       data: products,
       metadata: {
         totalPages,
+      },
+    };
+  } catch (error) {
+    return {
+      error: `Something went wrong. Please try again. ${error}`,
+    };
+  }
+}
+
+// Filter Function
+export async function filterResults({
+  filterParams,
+}: {
+  filterParams: string;
+}) {
+  try {
+    if (!filterParams)
+      return {
+        error: "No Search String Provided",
+      };
+
+    const userData = await getUserData();
+
+    if (!userData) {
+      return {
+        error: "Login Required",
+      };
+    }
+
+    const results = await db
+      .select()
+      .from(inventoryTable)
+      .where(ilike(inventoryTable.title, `%${filterParams}%`));
+
+    return {
+      data: results,
+      metadata: {
+        totalResults: results.length,
       },
     };
   } catch (error) {

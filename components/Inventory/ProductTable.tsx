@@ -10,10 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Input } from "../ui/input";
 import { fetchProducts } from "@/actions/inventory";
 import PaginationButton from "./PaginationButton";
 import { PageProps } from "@/app/page";
+import SearchBar from "./SearchBar";
 
 export default async function ProductTable(props: PageProps) {
   const page = (await props.searchParams?.page) || 1;
@@ -43,10 +43,7 @@ export default async function ProductTable(props: PageProps) {
   const totalAmount = calculateTotalAmount(products);
   return (
     <div className="w-full max-w-7xl grid gap-3 mx-auto py-10">
-      <div className="container mx-auto flex items-center gap-2">
-        <label htmlFor="Search Product">Search </label>
-        <Input placeholder="Search Product..." type="text" />
-      </div>
+      <SearchBar />
       <Table className="border p-2 container mx-auto">
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
